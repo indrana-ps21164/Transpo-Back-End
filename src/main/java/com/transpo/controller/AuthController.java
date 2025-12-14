@@ -1,5 +1,6 @@
 package com.transpo.controller;
 
+//this is the auth controller
 import com.transpo.dto.*;
 import com.transpo.model.User;
 import com.transpo.repository.UserRepository;
@@ -17,10 +18,14 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-    @Autowired private UserService userService;
-    @Autowired private UserRepository userRepo;
-    @Autowired private BCryptPasswordEncoder passwordEncoder;
-    @Autowired private JwtUtil jwtUtil;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserRepository userRepo;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
@@ -35,9 +40,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
         Optional<User> userOpt = userRepo.findByUsername(req.getUsername());
-        if (userOpt.isEmpty()) return ResponseEntity.status(401).body("Invalid credentials");
+        if (userOpt.isEmpty())
+            return ResponseEntity.status(401).body("Invalid credentials");
         User u = userOpt.get();
-        if (!passwordEncoder.matches(req.getPassword(), u.getPasswordHash())) return ResponseEntity.status(401).body("Invalid credentials");
+        if (!passwordEncoder.matches(req.getPassword(), u.getPasswordHash()))
+            return ResponseEntity.status(401).body("Invalid credentials");
         String token = jwtUtil.generateToken(u.getUsername(), u.getId(), u.getRole().name());
         return ResponseEntity.ok(new AuthResponse(token, u.getUsername(), u.getRole().name(), u.getId()));
     }
